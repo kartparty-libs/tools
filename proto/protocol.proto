@@ -1,0 +1,224 @@
+syntax = "proto3";
+package proto; 
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 基础
+
+// 服务器响应客户端首包
+message MsgClientHeader
+{
+    ResCodeEnum Code=1;
+    int64 Date=2;
+    int64 Id=3;
+}
+// 客户端请求服务器首包
+message MsgServerHeader
+{
+    int64 PlayerInstId=1;
+}
+// 请求操作返回枚举
+enum ResCodeEnum
+{
+    // 成功
+    Succeed = 0;
+    // 账号重复
+    AccountDuplication = 1;
+    // 名字含非法字符
+    InvalidName = 2;
+    // 账号未注册
+    AccountNotRegistered = 3;
+    // 密码错误
+    PassworWrongd = 4;
+    // 账号密码含非法字符
+    InvalidAccount = 5;
+    // 服务器繁忙
+    ServerBusy = 6;
+    // 未知错误
+    UnknownError = 10000;
+}
+// 请求操作返回
+message ResMsgBodyCode
+{
+    // 开启服务器时间
+    int64 openServerTime=1;
+}
+
+// --------------------------------------------
+// 数据
+
+// 房间数据
+message RoomData
+{
+    // 房间实例Id
+    int64 InstId=1;
+    // 地图配置Id
+    int32 MapCfgId=2;
+    // 房间玩家人数上限
+    int32 RoomMaxPlayerCount=3;
+    // 房主
+    int64 RoomOwnerPlayer=4;
+    // 房间玩家列表
+    repeated BattlePlayerData Players=5;
+}
+
+// 战斗角色数据
+message BattlePlayerData
+{
+    // 玩家实例Id
+    int64 A=1;
+    // 账号
+    string B=2;
+    // 玩家名字
+    string C=3;
+}
+
+// 战斗角色状态同步信息
+message BattlePlayerStateData
+{
+    // 玩家ID
+    int64 A = 1;
+    // 数组[PosX,PosY,PosZ,RotX,RotY,RotZ]
+    repeated int32 B = 2;
+    // 扩展json数据
+    string C=3;
+}
+
+// --------------------------------------------
+// 发送ping
+message ReqMsgPing
+{
+}
+// 回复ping
+message ResMsgPing
+{
+}
+
+// --------------------------------------------
+// 断线重连
+message ReqMsgReconnect
+{
+}
+// 重连数据
+message ResMsgReconnect
+{
+    // 房间数据
+    RoomData RoomData=1;
+}
+
+// --------------------------------------------
+// 请求创建战斗服角色
+message ReqMsgCreateBattlePlayer
+{
+    // 账号
+    string Account=1;
+    // 密码
+    string Password=2;
+    // 名字
+    string PlayerName=3;
+}
+// 创建战斗服角色返回
+message ResMsgCreateBattlePlayer
+{
+    ResCodeEnum ResCodeEnum=1;
+    // 战斗玩家数据
+    BattlePlayerData BattlePlayerData=2;
+}
+// --------------------------------------------
+// 登入玩家
+message ReqMsgLoginBattlePlayer
+{
+    // 账号
+    string Account=1;
+    // 密码
+    string Password=2;
+}
+message ResMsgLoginBattlePlayer
+{
+    ResCodeEnum ResCodeEnum=1;
+    // 战斗玩家数据
+    BattlePlayerData BattlePlayerData=2;
+}
+// --------------------------------------------
+// 设置名字
+message ReqMsgSetName
+{
+    // 名字
+    string name=1;
+}
+// --------------------------------------------
+// 请求加入房间
+message ReqMsgPlayerEnterRoom
+{
+    // 地图Id
+    int32 MapCfgId=1;
+}
+// 加入房间返回
+message ResMsgPlayerEnterRoom
+{
+    // 房间数据
+    RoomData RoomData=1;
+}
+
+// --------------------------------------------
+// 玩家加载地图完成通知
+message ReqMsgPlayerLoadMapComplete
+{
+}
+
+// --------------------------------------------
+// 请求离开房间
+message ReqMsgPlayerLeaveRoom
+{
+}
+message ResMsgPlayerLeaveRoom
+{
+}
+
+// --------------------------------------------
+// 房间数据变化返回
+message ResMsgRoomDataChange
+{
+    // 房间数据
+    RoomData RoomData=1;
+}
+
+// --------------------------------------------
+// 玩家状态同步
+message ReqMsgPlayerStateSync
+{
+    BattlePlayerStateData BattlePlayerStateData=1;
+}
+// 玩家状态同步返回
+message ResMsgPlayerStateSync
+{
+    repeated BattlePlayerStateData BattlePlayerStateDatas=1;
+}
+
+// 玩家进入视野通知
+message ResMsgPlayerEnterAoi
+{
+    // 玩家数据
+    repeated BattlePlayerData A=1;
+    // 玩家状态
+    repeated BattlePlayerStateData B=2;
+}
+
+// 玩家离开视野通知
+message ResMsgPlayerLeaveAoi
+{
+    // 玩家实例Id
+    repeated int64 A=1;
+}
+
+// --------------------------------------------
+// 广播地图玩家
+message ReqMsgSendPlayer
+{
+    string json=1;
+    string account=2;
+    bool isIgnoreSelf=3;
+}
+message ResMsgSendPlayer
+{
+    string json=1;
+}

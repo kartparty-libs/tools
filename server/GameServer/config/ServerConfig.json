@@ -1,0 +1,14 @@
+{
+    "version": 1,
+
+    "environment_des": "环境类型: 0:开发环境 1:测试环境 2:生产环境",
+    "environment": 0,
+
+    "isdebug": false,
+
+    "map_des": "size：地图大小/厘米  grid：地图格子大小/厘米",
+    "map_size": [ 100000, 100000 ],
+    "map_grid": [ 1000, 1000 ],
+
+    "map_max_player": 50
+}               
