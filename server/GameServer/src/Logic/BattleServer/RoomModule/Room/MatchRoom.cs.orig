@@ -1,0 +1,116 @@
+﻿
+using Proto;
+
+/// <summary>
+/// 匹配比赛房间
+/// </summary>
+public class MatchRoom : BaseRoom
+{
+    private MapGrid m_pMapGrid;
+    public MatchRoom(long i_nInstId) : base(i_nInstId)
+    {
+        m_pMapGrid = new();
+    }
+
+    /// <summary>
+    /// 玩家离开房间
+    /// </summary>
+    /// <param name="i_pBattlePlayer"></param>
+    /// <param name="i_bIsKick"></param>
+    public override void PlayerLeaveRoom(BattlePlayer i_pBattlePlayer, bool i_bIsKick = false)
+    {
+        m_pMapGrid.Remove(i_pBattlePlayer.GetPlayerInstId());
+        base.PlayerLeaveRoom(i_pBattlePlayer, i_bIsKick);
+    }
+
+    /// <summary>
+    /// 房间数据改变通知
+    /// </summary>
+    //public override void OnChangeRoomData()
+    //{
+    //    if (m_tPlayers.Count == 0)
+    //    {
+    //        return;
+    //    }
+    //    foreach (var player in m_tPlayers)
+    //    {
+    //        ResMsgClientData resMsgClientData = new ResMsgClientData();
+    //        RoomData roomData = GetRoomData();
+
+    //        roomData.Players.Clear();
+    //        roomData.Players.AddRange(m_pMapGrid.Get(player.GetPlayerInstId()));
+    //        ResMsgRoomDataChange resMsgBodyRoomDataChange = new ResMsgRoomDataChange()
+    //        {
+    //            RoomData = GetRoomData(),
+    //        };
+    //        resMsgClientData.AddMessageData(resMsgBodyRoomDataChange);
+    //        player.SendToClient(i_pResponseMessageData);
+    //    }
+    //}
+
+    /// <summary>
+    /// 玩家状态同步 覆写
+    /// </summary>
+    public override void PlayerStateSync(BattlePlayer i_pBattlePlayer, BattlePlayerStateData i_pBattlePlayerStateData)
+    {
+        i_pBattlePlayer.SetLastBattlePlayerStateData(i_pBattlePlayerStateData);
+        ResMsgClientData resMsgClientData = new ResMsgClientData();
+        ResMsgPlayerStateSync resMsgBodyPlayerStateSync = new ResMsgPlayerStateSync()
+        {
+            BattlePlayerStateData = i_pBattlePlayerStateData,
+        };
+        resMsgClientData.AddMessageData(resMsgBodyPlayerStateSync);
+<<<<<<< HEAD
+
+        ResMsgClientData resMsgClientData1 = new ResMsgClientData();
+        ResMsgPlayerStateSync resMsgBodyPlayerStateSync1 = new ResMsgPlayerStateSync();
+        resMsgClientData1.AddMessageData(resMsgBodyPlayerStateSync1);
+
+=======
+        var oldId = m_pMapGrid.GetGridIdByInstId(i_pBattlePlayer.GetPlayerInstId());
+>>>>>>> 35cc5498250fd3e8f8bf0ebb296155349660f857
+        List<long> players = m_pMapGrid.Add(i_pBattlePlayerStateData.Position.X / 100000, i_pBattlePlayerStateData.Position.Y / 100000, i_pBattlePlayer.GetPlayerInstId());
+        if (players != null)
+        {
+            foreach (var instId in players)
+            {
+                BattlePlayer player = BattlePlayerManager.Instance.GetBattlePlayer(instId);
+                resMsgBodyPlayerStateSync1.Players.Add(player.GetBattlePlayerData());
+                if (i_pBattlePlayer.GetPlayerInstId() != instId)
+                {
+                    player.SendToClient(resMsgClientData);
+                }
+            }
+<<<<<<< HEAD
+        };
+
+        i_pBattlePlayer.SendToClient(resMsgClientData1);
+=======
+        }
+        var newId = m_pMapGrid.GetGridIdByInstId(i_pBattlePlayer.GetPlayerInstId());
+        if (newId != oldId)
+        {
+            var gridPlayerIds = m_pMapGrid.GetGridPlayerList(newId);
+            foreach (var instId in gridPlayerIds)
+            {
+                BattlePlayer player = BattlePlayerManager.Instance.GetBattlePlayer(instId);
+                if (i_pBattlePlayer.GetPlayerInstId() != instId)
+                {
+                    var d = player.GetBattlePlayerData();
+                    if (d.LastBattlePlayerStateData == null)
+                    {
+                        continue;
+                    }
+                    var statesync = new ResMsgPlayerStateSync()
+                    {
+                        BattlePlayerStateData = d.LastBattlePlayerStateData,
+                    };
+                    var res = new ResMsgClientData();
+                    res.AddMessageData(statesync);
+                    i_pBattlePlayer.SendToClient(res);
+                }
+            }
+        }
+>>>>>>> 35cc5498250fd3e8f8bf0ebb296155349660f857
+    }
+}
