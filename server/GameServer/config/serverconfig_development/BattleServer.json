@@ -1,0 +1,11 @@
+{
+    "ip": "49.232.165.74",
+    "db_host": "49.232.165.74",
+    "db_port": 3306,
+    "db_user": "root",
+    "db_pwd": "Shj_2022",
+    "db_name": "gamedb_networkdemo",
+    "db_sql": "BattleServerSql.sql",
+
+    "port_websocket": 6001
+}
